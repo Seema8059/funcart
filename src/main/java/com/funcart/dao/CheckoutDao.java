@@ -19,6 +19,7 @@ public class CheckoutDao {
 	private static final String String = null;
 	@PersistenceContext
 	private EntityManager em;
+	private String errorMsg;
 	
 	
 	@Transactional(rollbackOn = Exception.class)
@@ -31,9 +32,11 @@ public class CheckoutDao {
 		customer.setShippingAddress(paymentDto.getShippingaddress());
 		customer.setPaymentBy(paymentDto.getPaymentBy());
 		
+		
+		
 	try {
 
-		if (checkShipDetail(customer)) {
+		if (checkShipDetail(paymentDto)) {
 
 			int result = em
 					.createQuery(
@@ -57,19 +60,25 @@ public class CheckoutDao {
 	
 }
 
-	public boolean checkShipDetail(Customer customer) {
+	public boolean checkShipDetail(CheckoutDto paymentDto) {
 		boolean flag = false;
-		if (customer.getPaymentBy().equals("cash")||!customer.getPaymentBy().isEmpty()) {
+		if (!paymentDto.getBillingaddress().isEmpty()||!paymentDto.getPaymentBy().isEmpty()||!paymentDto.getShippingaddress().isEmpty()) {
 			flag = true;
-			if (!customer.getPaymentBy().isEmpty() || customer.getPaymentBy().equals("card")) {
-				flag = true;
-			} else {
+		}else {
 			flag = false;
-			}}else
-		{
-			flag=false;
 		}
-	
+		return flag;
+	}
+
+	public boolean checkCustomer(String email,String password)throws Exception{
+		boolean flag = false;
+		Customer customer = null;
+		customer = (Customer) em.createQuery("Select c From Customer As c Where c.email = ? And c.password = ?")
+				.setParameter(0, email)
+				.setParameter(1, password)
+				.getSingleResult();
+		if(customer != null)
+			flag = true;
 		return flag;
 	}
 	

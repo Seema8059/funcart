@@ -53,6 +53,8 @@ public ResponseEntity savePayment(@RequestBody CheckoutDto paymentDto,@RequestHe
 		errorMsg = "Empty Input Fields";
 	}else if(!Validator.emailValidate(paymentDto.getEmail())){
 		errorMsg = "Invalid Email ";
+	}else if(!Validator.passwordValidate(paymentDto.getPassword())){
+			errorMsg = "Invalid password ";
 	}else{
 	
 	@SuppressWarnings("unused")

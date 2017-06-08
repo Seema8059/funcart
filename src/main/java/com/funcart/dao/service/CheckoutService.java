@@ -1,6 +1,8 @@
 package com.funcart.dao.service;
 
 
+import javax.persistence.NoResultException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,30 +22,26 @@ public class CheckoutService {
 	private String errorMsg;
 	
 	public boolean paymentMode(CheckoutDto paymentDto) throws Exception{
+		boolean flag = false;
 		
-		
-		if(Validator.emailValidate(paymentDto.getEmail())){
-		
-			if(checkDao.customerCheckout(paymentDto)){
-				return true;
-			}else{
-				errorMsg = "Email Invalid";
-				return false;
+		//if(Validator.emailValidate(paymentDto.getEmail())){
+			try{
+				if(checkDao.checkCustomer(paymentDto.getEmail(),paymentDto.getPassword())){
+					if(checkDao.customerCheckout(paymentDto)){
+					flag = true;
+				}
+				else{
+					flag = false;
+					errorMsg = "Error In Finding Customer";
+				}
+			}}catch(NoResultException e){
+				flag = false;
+				errorMsg = "Customer Not_Found";
 			}
-		}else{
-			errorMsg = "Invalid 'email' Detail";
-	
-		
-		//if(paymentDao.paymentMode(paymentDto))
-			
-			return false;
+			return flag;
+
 	}
 	
-	}
-	
-	
-
-
 public CheckoutDao getCheckDao() {
 	return checkDao;
 }
